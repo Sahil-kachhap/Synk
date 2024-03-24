@@ -1,9 +1,10 @@
-import { Button } from "@/components/ui/button";
-
+import { UserButton } from "@clerk/nextjs";
+ 
 export default function Home() {
   return (
-    <>
-      This is a protected page.
-    </>
-  );
+    <div className="h-screen">
+      <UserButton afterSignOutUrl="/" />
+      <p>Home Page</p>
+    </div>
+  )
 }
