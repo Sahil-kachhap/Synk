@@ -20,7 +20,7 @@ export const NavigationItem = ({ id, imageUrl, name }: NavigationItemProps) => {
 
   return (
     <ActionToolTip side="right" align="center" label={name}>
-      <button className="group relative flex items-center" onClick={() => {}}>
+      <button className="group relative flex items-center" onClick={onClick}>
         <div
           className={cn(
             "absolute left-0 bg-primary rounded-r-full transition-all w-[4px]",
