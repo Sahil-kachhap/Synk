@@ -17,6 +17,7 @@ import {
   Users,
 } from "lucide-react";
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
+import { useModal } from "../../../hooks/use-modal-store";
 
 export const ServerHeader = ({
   server,
@@ -25,6 +26,7 @@ export const ServerHeader = ({
   server: ServerWithMembersWithProfile;
   role?: MemberRole;
 }) => {
+  const { onOpen } = useModal();
   const isAdmin = role === MemberRole.ADMIN;
   const isModerator = isAdmin || role === MemberRole.MODERATOR;
   return (
@@ -37,7 +39,7 @@ export const ServerHeader = ({
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56 text-xs font-medium text-black dark:text-neutral-400 space-y-[2px]">
         {isModerator && (
-          <DropdownMenuItem className="text-indigo-600 dark:text-indigo-400 text-sm cursor-pointer px-3 py-2">
+          <DropdownMenuItem onClick={() => onOpen("invite", {server})} className="text-indigo-600 dark:text-indigo-400 text-sm cursor-pointer px-3 py-2">
             Invite People
             <UserPlus className="size-4 ml-auto" />
           </DropdownMenuItem>
@@ -60,17 +62,19 @@ export const ServerHeader = ({
             <PlusCircle className="size-4 ml-auto" />
           </DropdownMenuItem>
         )}
-        {
-          isModerator && (
-            <DropdownMenuSeparator />
-          )
-        }
-        {isAdmin && <DropdownMenuItem className="text-rose-500 text-sm cursor-pointer px-3 py-2">Delete Server
-        <Trash className="size-4 ml-auto"/>
-        </DropdownMenuItem>}
-        {!isAdmin && <DropdownMenuItem className="text-rose-500 text-sm cursor-pointer px-3 py-2">Leave Server
-        <LogOut className="size-4 ml-auto"/>
-        </DropdownMenuItem>}
+        {isModerator && <DropdownMenuSeparator />}
+        {isAdmin && (
+          <DropdownMenuItem className="text-rose-500 text-sm cursor-pointer px-3 py-2">
+            Delete Server
+            <Trash className="size-4 ml-auto" />
+          </DropdownMenuItem>
+        )}
+        {!isAdmin && (
+          <DropdownMenuItem className="text-rose-500 text-sm cursor-pointer px-3 py-2">
+            Leave Server
+            <LogOut className="size-4 ml-auto" />
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
