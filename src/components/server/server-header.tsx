@@ -57,7 +57,7 @@ export const ServerHeader = ({
           </DropdownMenuItem>
         )}
         {isModerator && (
-          <DropdownMenuItem className="text-sm cursor-pointer px-3 py-2">
+          <DropdownMenuItem onClick={() => onOpen("createChannel", {server})} className="text-sm cursor-pointer px-3 py-2">
             Create Channel
             <PlusCircle className="size-4 ml-auto" />
           </DropdownMenuItem>
