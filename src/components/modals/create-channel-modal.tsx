@@ -25,8 +25,15 @@ import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 import { useModal } from "../../../hooks/use-modal-store";
 import { ChannelType } from "@prisma/client";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 import { ServerWithMembersWithProfile } from "../../../types";
+import { useEffect } from "react";
 
 const formSchema = z.object({
   name: z
@@ -43,17 +50,26 @@ const formSchema = z.object({
 export const CreateChannelModal = () => {
   const router = useRouter();
   const params = useParams();
-  const { isOpen, onClose, type } = useModal();
+  const { isOpen, onClose, type, data } = useModal();
 
   const isModalOpen = isOpen && type === "createChannel";
+  const { channelType } = data;
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      type: ChannelType.TEXT,
+      type: channelType || ChannelType.TEXT,
     },
   });
+
+  useEffect(() => {
+    if(channelType){
+      form.setValue("type", channelType);
+    }else{
+      form.setValue("type", ChannelType.TEXT);
+    }
+  }, [form, channelType]);
 
   const isLoading = form.formState.isSubmitting;
 
@@ -130,11 +146,15 @@ export const CreateChannelModal = () => {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                           {Object.values(ChannelType).map((type) => (
-                             <SelectItem key={type} value={type} className="capitalize">
+                          {Object.values(ChannelType).map((type) => (
+                            <SelectItem
+                              key={type}
+                              value={type}
+                              className="capitalize"
+                            >
                               {type.toLowerCase()}
-                             </SelectItem>
-                           ))} 
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                       <FormMessage />
