@@ -1,11 +1,11 @@
 import { currentProfile } from "@/lib/curent-profile";
 import { db } from "@/lib/db";
 import { Message } from "@prisma/client";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-const MESSAGE_BATCH = 1;
+const MESSAGE_BATCH = 10;
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   try {
     const profile = await currentProfile();
     const { searchParams } = new URL(req.url);
@@ -37,8 +37,8 @@ export async function GET(req: Request) {
           member: {
             include: {
               profile: true,
-            },
-          },
+            }
+          }
         },
         orderBy: {
           createdAt: "desc",
