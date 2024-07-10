@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form";
 import { Button } from "../ui/button";
 import qs from "query-string";
 import axios from "axios";
+import { useModal } from "../../../hooks/use-modal-store";
 
 const formSchema = z.object({
   content: z.string().min(1),
@@ -63,7 +64,7 @@ export const ChatItem = ({
   const isImage = !isPdf && fileUrl;
 
   const [isEditing, setIsEditing] = useState(false);
-
+  const { onOpen } = useModal();
 
   useEffect(() => {
     const handleKeyDown = (event: any) => {
@@ -84,7 +85,6 @@ export const ChatItem = ({
 
   const isLoading = form.formState.isSubmitting;
 
-
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const url = qs.stringifyUrl({
@@ -95,7 +95,7 @@ export const ChatItem = ({
       await axios.patch(url, values);
       form.reset();
       setIsEditing(false);
-    }catch(error){
+    } catch (error) {
       console.log(error);
     }
   };
@@ -162,7 +162,7 @@ export const ChatItem = ({
                   "text-xs italic mt-1 text-zinc-500 dark:text-zinc-400"
               )}
             >
-              {deleted ? "message has been deleted" : content}
+              {content}
               {isUpdated && !deleted && (
                 <span className="text-[10px] mx-2 text-zinc-500 dark:text-zinc-400">
                   (edited)
@@ -183,7 +183,8 @@ export const ChatItem = ({
                     <FormItem className="flex-1">
                       <FormControl>
                         <div className="w-full relative">
-                          <Input disabled={isLoading}
+                          <Input
+                            disabled={isLoading}
                             className="p-2 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200"
                             placeholder="Edited message"
                             {...field}
@@ -215,7 +216,10 @@ export const ChatItem = ({
             </ActionToolTip>
           )}
           <ActionToolTip label="Delete">
-            <Trash className="size-4 ml-auto cursor-pointer text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition" />
+            <Trash onClick={() => onOpen("deleteMessage", {
+              apiUrl: `${socketUrl}/${id}`,
+              query: socketQuery,
+            })} className="size-4 ml-auto cursor-pointer text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition" />
           </ActionToolTip>
         </div>
       )}
