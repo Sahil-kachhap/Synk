@@ -16,6 +16,7 @@ import { Button } from "../ui/button";
 import qs from "query-string";
 import axios from "axios";
 import { useModal } from "../../../hooks/use-modal-store";
+import { useParams, useRouter } from "next/navigation";
 
 const formSchema = z.object({
   content: z.string().min(1),
@@ -66,6 +67,9 @@ export const ChatItem = ({
   const [isEditing, setIsEditing] = useState(false);
   const { onOpen } = useModal();
 
+  const router = useRouter();
+  const params = useParams();
+
   useEffect(() => {
     const handleKeyDown = (event: any) => {
       if (event.key === "Escape" || event.keyCode === 27) {
@@ -100,6 +104,14 @@ export const ChatItem = ({
     }
   };
 
+  const onMemberClick = () => {
+    if (member.id === currentMember.id) {
+      return;
+    }
+
+    router.push(`/servers/${params?.serverId}/conversations/${member.id}`);
+  };
+
   useEffect(() => {
     form.reset({
       content: content,
@@ -109,13 +121,13 @@ export const ChatItem = ({
   return (
     <div className="relative group flex items-center p-4 transition w-full hover:bg-black/5">
       <div className="group flex items-start gap-x-2 w-full">
-        <div className="cursor-pointer hover:drop-shadow-md transition">
+        <div onClick={onMemberClick} className="cursor-pointer hover:drop-shadow-md transition">
           <UserAvatar src={member.profile.imageUrl} />
         </div>
         <div className="flex flex-col w-full">
           <div className="flex gap-x-2 items-center">
             <div className="flex items-center">
-              <p className="font-semibold text-sm cursor-pointer hover:underline">
+              <p onClick={onMemberClick} className="font-semibold text-sm cursor-pointer hover:underline">
                 {member.profile.name}
               </p>
               <ActionToolTip label={member.role}>
@@ -216,10 +228,15 @@ export const ChatItem = ({
             </ActionToolTip>
           )}
           <ActionToolTip label="Delete">
-            <Trash onClick={() => onOpen("deleteMessage", {
-              apiUrl: `${socketUrl}/${id}`,
-              query: socketQuery,
-            })} className="size-4 ml-auto cursor-pointer text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition" />
+            <Trash
+              onClick={() =>
+                onOpen("deleteMessage", {
+                  apiUrl: `${socketUrl}/${id}`,
+                  query: socketQuery,
+                })
+              }
+              className="size-4 ml-auto cursor-pointer text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition"
+            />
           </ActionToolTip>
         </div>
       )}
